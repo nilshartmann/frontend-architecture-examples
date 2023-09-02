@@ -2,11 +2,12 @@ package nh.example.webappdemo.comments;
 
 import org.springframework.stereotype.Repository;
 
+import java.util.LinkedList;
 import java.util.List;
 
 @Repository
 public class CommentRepository {
-    private final List<Comment> comments = List.of(
+    private List<Comment> comments = List.of(
         new Comment(1, 1, "Klaus", "Great article, very helpful!"),
         new Comment(2, 1, "Susi", "Well written, sad that flex box is missing here"),
         new Comment(3, 2, "Kathy", "On point, thanks a lot"),
@@ -17,5 +18,12 @@ public class CommentRepository {
 
     public List<Comment> findCommentsForBlog(int postId) {
         return comments.stream().filter(c -> c.postId() == postId).toList();
+    }
+
+    public void addComment(int postId, String name, String comment) {
+        var id = comments.size() + 1;
+        var newComments = new LinkedList<>(comments);
+        newComments.add(new Comment(id, postId, name, comment));
+        this.comments = newComments;
     }
 }
