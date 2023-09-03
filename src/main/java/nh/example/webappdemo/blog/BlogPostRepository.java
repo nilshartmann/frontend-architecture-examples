@@ -1,4 +1,4 @@
-package nh.example.webappdemo;
+package nh.example.webappdemo.blog;
 
 import org.springframework.stereotype.Repository;
 

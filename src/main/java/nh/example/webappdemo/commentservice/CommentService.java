@@ -1,4 +1,4 @@
-package nh.example.webappdemo.comments;
+package nh.example.webappdemo.commentservice;
 
 import jakarta.validation.constraints.Size;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package nh.example.webappdemo.comments;
+package nh.example.webappdemo.commentservice;
 
 public record Comment(int id, int postId, String name, String comment) {
 }
