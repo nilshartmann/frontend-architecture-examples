@@ -43,6 +43,19 @@
           </p>
         </section>
 
+        <form action="#" th:action="@{{id}(id=${postId})}" th:object="${commentFormData}" method="post">
+          <h2>✍️ Leave a comment</h2>
+          <p>I'm happy to hear from you, please leave your comment below</p>
+
+          <div class="FormRow">
+            <input type="text" name="name" placeholder="Your name here" aria-label="Your name" th:value="*{name}"/>
+            <input type="text" name="comment" placeholder="Your comment here" aria-label="Comment"
+                   th:value="*{comment}"/>
+            <button type="submit">Add</button>
+          </div>
+          <p class="error" th:if="${commentFormError != null}" th:text="${commentFormError}">Error, could not save
+            comment.</p>
+        </form>
       </main>
 
       <aside>

@@ -43,9 +43,33 @@
           </p>
         </section>
 
+        <form action="#" th:action="@{{id}(id=${postId})}" th:object="${commentFormData}" method="post">
+          <h2>✍️ Leave a comment</h2>
+          <p>I'm happy to hear from you, please leave your comment below</p>
+
+          <div class="FormRow">
+            <input type="text" name="name" placeholder="Your name here" aria-label="Your name" th:value="*{name}"/>
+            <input type="text" name="comment" placeholder="Your comment here" aria-label="Comment"
+                   th:value="*{comment}"/>
+            <button type="submit">Add</button>
+          </div>
+          <p class="error" th:if="${commentFormError != null}" th:text="${commentFormError}">Error, could not save
+            comment.</p>
+        </form>
       </main>
 
       <aside>
+        <form action="#" th:action="@{subscribe(postId=${postId})}" th:object="${newsletterFormData}" method="post">
+          <h2>✉️ Subscribe to newsletter</h2>
+          <p>Don't want to miss new premium content? Register here to our newsletter, it's completly free and without
+            ads</p>
+          <div class="FormRow">
+            <input type="text" placeholder="E-Mail" name="email" aria-label="E-Mail"/>
+
+            <button type="submit">Register</button>
+          </div>
+          <p th:if="${newsletterFormDataMsg != null}" th:text="${newsletterFormDataMsg}">Success!</p>
+        </form>
       </aside>
     </div>
   </body>

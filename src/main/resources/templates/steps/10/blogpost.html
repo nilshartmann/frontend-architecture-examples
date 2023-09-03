@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Example Blog</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/htmx.min.js"></script>
+  </head>
+  <body>
+
+    <header>
+      <div><a href="/2" th:href="${prevUrl}" th:if="${prevUrl!=null}">️
+        <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
+             xmlns="http://www.w3.org/2000/svg">
+          <path d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+      </a>
+      </div>
+
+      <div><h1><a href="/">My personal blog</a></h1></div>
+      <div style="text-align: end">
+        <a href="/2" th:href="${nextUrl}"
+           th:if="${nextUrl!=null}">
+          <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
+               xmlns="http://www.w3.org/2000/svg">
+            <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </a>
+      </div>
+
+    </header>
+
+    <div class="Content">
+      <main>
+        <h1 th:text="${post.title()}">Hallo Welt</h1>
+        <img src="/image_01.png" th:attr="src=${'/' + post.image()}"/>
+        <p th:utext="${post.body()}" th:remove="tag">Lorem ipsum</p>
+
+        <section class="Comments">
+          <h3>Comments</h3>
+          <div th:attr="hx-get=@{{id}/comments(id=${postId})}" hx-trigger="load">Comments are loading...</div>
+        </section>
+        <form action="#" th:action="@{{id}(id=${postId})}" th:object="${commentFormData}" method="post">
+          <h2>✍️ Leave a comment</h2>
+          <p>I'm happy to hear from you, please leave your comment below</p>
+
+          <div class="FormRow">
+            <input type="text" name="name" placeholder="Your name here" aria-label="Your name" th:value="*{name}"/>
+            <input type="text" name="comment" placeholder="Your comment here" aria-label="Comment"
+                   th:value="*{comment}"/>
+            <button type="submit">Add</button>
+          </div>
+          <p class="error" th:if="${commentFormError != null}" th:text="${commentFormError}">Error, could not save
+            comment.</p>
+        </form>
+      </main>
+
+      <aside>
+        <form action="#" th:action="@{subscribe(postId=${postId})}" th:object="${newsletterFormData}" method="post">
+          <h2>✉️ Subscribe to newsletter</h2>
+          <p>Don't want to miss new premium content? Register here to our newsletter, it's completly free and without
+            ads</p>
+          <div class="FormRow">
+            <input type="text" placeholder="E-Mail" name="email" aria-label="E-Mail"/>
+
+            <button type="submit">Register</button>
+          </div>
+          <p th:if="${newsletterFormDataMsg != null}" th:text="${newsletterFormDataMsg}">Success!</p>
+        </form>
+      </aside>
+    </div>
+  </body>
+</html>

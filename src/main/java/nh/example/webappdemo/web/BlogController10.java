@@ -1,4 +1,4 @@
-package nh.example.webappdemo.step01;
+package nh.example.webappdemo.web;
 
 import nh.example.webappdemo.blog.BlogPostRepository;
 import nh.example.webappdemo.commentservice.CommentService;
@@ -9,15 +9,15 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-@RequestMapping("/steps/01")
-public class BlogController {
+@RequestMapping("/steps/10")
+public class BlogController10 {
 
-    private static final Logger log = LoggerFactory.getLogger(BlogController.class);
+    private static final Logger log = LoggerFactory.getLogger(BlogController10.class);
 
     private final BlogPostRepository blogPostRepository;
     private final CommentService commentService;
 
-    public BlogController(BlogPostRepository blogPostRepository, CommentService commentService) {
+    public BlogController10(BlogPostRepository blogPostRepository, CommentService commentService) {
         this.blogPostRepository = blogPostRepository;
         this.commentService = commentService;
     }
@@ -30,7 +30,7 @@ public class BlogController {
 
     @GetMapping("")
     public String index() {
-        return "redirect:/steps/01/post/1";
+        return "redirect:/steps/10/post/1";
     }
 
     @GetMapping("post/{postId}")
@@ -61,6 +61,15 @@ public class BlogController {
         return populateModel(postId);
     }
 
+    @GetMapping("post/{postId}/comments")
+    public ModelAndView getComments(@PathVariable int postId) {
+        var comments = commentService.getCommentsForPostFromRemoteServiceThatIsVerySlow(postId);
+        log.info("Comments received {}", comments);
+        var model = new ModelAndView("steps/10/comments");
+        model.getModelMap().addAttribute("comments", comments);
+        return model;
+    }
+
     public record NewsletterFormData(String email) {
     }
 
@@ -86,22 +95,20 @@ public class BlogController {
     }
 
     private ModelAndView populateModel(int postId) {
-        var modelAndView = new ModelAndView("steps/01/blogpost");
+        var modelAndView = new ModelAndView("/steps/10/blogpost");
         var model = modelAndView.getModelMap();
         var post = blogPostRepository.getPostById(postId);
-        var comments = commentService.getCommentsForPost(postId);
 
         model.addAttribute("postId", postId);
         model.addAttribute("post", post);
-        model.addAttribute("comments", comments);
         model.addAttribute("commentFormData", CommentFormData.empty());
 
 
         if (postId > 1) {
-            model.addAttribute("prevUrl", "/steps/01/post/" + (postId - 1));
+            model.addAttribute("prevUrl", "/steps/10/post/" + (postId - 1));
         }
         if (postId < blogPostRepository.getPostCount()) {
-            model.addAttribute("nextUrl", "/steps/01/post/" + (postId + 1));
+            model.addAttribute("nextUrl", "/steps/10/post/" + (postId + 1));
         }
 
         return modelAndView;

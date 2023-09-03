@@ -4,13 +4,12 @@
   <head>
     <meta charset="UTF-8">
     <title>Example Blog</title>
-    <link rel="stylesheet" href="/styles.css">
   </head>
   <body>
 
     <header>
       <div><a href="/2" th:href="${prevUrl}" th:if="${prevUrl!=null}">️
-        <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
+        <svg height="48px" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
              xmlns="http://www.w3.org/2000/svg">
           <path d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" stroke-linecap="round" stroke-linejoin="round"></path>
         </svg>
@@ -21,7 +20,7 @@
       <div style="text-align: end">
         <a href="/2" th:href="${nextUrl}"
            th:if="${nextUrl!=null}">
-          <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
+          <svg height="48px" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
                xmlns="http://www.w3.org/2000/svg">
             <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" stroke-linecap="round" stroke-linejoin="round"></path>
           </svg>
@@ -33,7 +32,6 @@
     <div class="Content">
       <main>
         <h1 th:text="${post.title()}">Hallo Welt</h1>
-        <img src="/image_01.png" th:attr="src=${'/' + post.image()}"/>
         <p th:utext="${post.body()}" th:remove="tag">Lorem ipsum</p>
 
         <section class="Comments">

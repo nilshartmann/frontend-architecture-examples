@@ -144,6 +144,12 @@ form .error {
   font-weight: 600;
 }
 
+form .success {
+  color: mediumseagreen;
+  font-weight: 600;
+}
+
+
 form button {
   padding: 8px 12px;
   font-weight: 600;
