@@ -6,4 +6,4 @@ pluginManagement {
 }
 
 rootProject.name = 'frontend-architecture-examples'
-include 'spring-webapp'
+include 'spring-webapp', 'spa-example', 'comment-service'

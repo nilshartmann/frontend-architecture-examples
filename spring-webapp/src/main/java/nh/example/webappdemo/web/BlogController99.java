@@ -1,7 +1,7 @@
 package nh.example.webappdemo.web;
 
 import nh.example.webappdemo.blog.BlogPostRepository;
-import nh.example.webappdemo.commentservice.CommentService;
+import nh.example.webappdemo.blog.CommentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;

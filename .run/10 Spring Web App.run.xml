@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="01_Web-App und Server" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+  <configuration default="false" name="10 Spring Web App" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
     <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateResources" />
     <module name="frontend-architecture-examples.spring-webapp.main" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="nh.example.webappdemo.WebappDemoApplication" />

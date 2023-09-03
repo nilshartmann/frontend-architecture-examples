@@ -1,4 +1,4 @@
-package nh.example.webappdemo.commentservice;
+package nh.example.commentservice;
 
 import org.springframework.stereotype.Repository;
 
