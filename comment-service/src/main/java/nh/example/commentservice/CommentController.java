@@ -16,6 +16,7 @@ import java.util.List;
  * Think of this as a remote service (that might be slow or unavailable for some time)
  */
 @RestController
+@CrossOrigin(originPatterns = "http://localhost:[*]")
 @Validated
 public class CommentController {
 
