@@ -5,10 +5,9 @@ import nh.example.webappdemo.blog.BlogPostRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @CrossOrigin(originPatterns = "http://localhost:[*]")
@@ -26,8 +25,10 @@ public class BlogRestController {
     }
 
     @GetMapping("/api/post/{postId}")
-    public ResponseEntity<?> getPost(@PathVariable int postId) {
+    public ResponseEntity<?> getPost(@PathVariable int postId, @RequestParam Optional<Long> slowDown) {
         log.info("Read post '{}'", postId);
+
+        slowDown.ifPresent(this::sleep);
 
         var post = blogPostRepository.getPostById(postId);
         if (post == null) {
@@ -38,5 +39,14 @@ public class BlogRestController {
         var nextPostId = postId < blogPostRepository.getPostCount() ?  (postId + 1) : null;
 
         return ResponseEntity.ok(new GetBlogPostResponse(post, prevPostId, nextPostId));
+    }
+
+    private void sleep(long timeout) {
+        try {
+            Thread.sleep(timeout);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }

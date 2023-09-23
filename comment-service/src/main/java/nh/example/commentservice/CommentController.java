@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Think of this as a remote service (that might be slow or unavailable for some time)
@@ -29,8 +30,10 @@ public class CommentController {
     }
 
     @GetMapping("/api/comments/{postId}")
-    public List<Comment> getCommentsForPost(@PathVariable int postId) {
+    public List<Comment> getCommentsForPost(@PathVariable int postId, @RequestParam Optional<Long> slowDown) {
         log.info("Reading posts for comment {}", postId);
+
+        slowDown.ifPresent(this::sleep);
 
         return this.commentRepository.findCommentsForBlog(postId);
     }
@@ -46,9 +49,9 @@ public class CommentController {
         return ResponseEntity.created(null).build();
     }
 
-    private static void sleep() {
+    private void sleep(long timeout) {
         try {
-            Thread.sleep(2500);
+            Thread.sleep(timeout);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
