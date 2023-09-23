@@ -1,9 +1,15 @@
-import { Await, Form, useAsyncValue } from "react-router-dom";
+import { Await, Form, useActionData, useAsyncValue, useNavigate, useNavigation } from "react-router-dom";
 import React, { Suspense } from "react";
 import { GetCommentResponse, useBlogPostPageRouteLoaderData } from "./blog-queries.ts";
 
 export default function BlogPostPage() {
   const { blogPostResponse, commentsResponse } = useBlogPostPageRouteLoaderData();
+  const navigate = useNavigation();
+  const errors = useActionData();
+
+  const isSubmitting = navigate.formAction;
+  console.log("IS SUBMITTING", isSubmitting);
+  console.log("errors", errors);
 
   return (
     <Suspense fallback={<h1>Blog Post loading...</h1>}>

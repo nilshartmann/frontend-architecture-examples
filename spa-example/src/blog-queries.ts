@@ -37,7 +37,7 @@ function blogPostQuery(postId: string): QueryConfig<GetBlogPostResponse> {
     queryKey: ["post", postId],
     queryFn() {
       // slowdown: add "?slowDown=2400" to url
-      return fetch(`http://localhost:8080/api/post/${postId}?slowDown=2400`).then((r) => r.json());
+      return fetch(`http://localhost:8080/api/post/${postId}`).then((r) => r.json());
     },
   };
 }
@@ -68,10 +68,9 @@ export function blogPostAction(queryClient: QueryClient) {
     console.log("ADD COMMENT FOR POST", postId);
     const formdata = await request.formData();
     console.log("FORM DATA", formdata);
-    // no idea how to do this with TanStack Query mutation
     const response = await fetch(`http://localhost:8081/api/comments/${postId}`, {
       method: "POST",
-      body: JSON.stringify(formdata),
+      body: JSON.stringify(Object.fromEntries(formdata)),
       headers: { "content-type": "application/json" },
     });
     if (!response.ok) {
