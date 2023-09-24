@@ -41,6 +41,19 @@ public class BlogRestController {
         return ResponseEntity.ok(new GetBlogPostResponse(post, prevPostId, nextPostId));
     }
 
+    public record SubscribeToNewsletterRequest(String email) {}
+
+    @PostMapping("/api/newsletter/subscription")
+    public ResponseEntity<?> subscribeToNewsletter(@RequestBody SubscribeToNewsletterRequest request) {
+        log.info("Subscribe to newsletter... {}", request);
+
+        if (request.email()==null || request.email().isBlank()) {
+            return ApiError.badRequest("Please fill in correct e-mail address");
+        }
+
+        return ResponseEntity.ok(null);
+    }
+
     private void sleep(long timeout) {
         try {
             Thread.sleep(timeout);

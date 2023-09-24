@@ -1,15 +1,11 @@
 package nh.example.commentservice;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Size;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,11 +34,22 @@ public class CommentController {
         return this.commentRepository.findCommentsForBlog(postId);
     }
 
-    public record NewCommentData(@Size(min = 3) String name, String comment) {}
+    public record NewCommentData(String name, String comment) {}
 
     @PostMapping("/api/comments/{postId}")
-    public ResponseEntity<?> addCommentForPost(@PathVariable int postId, @Valid @RequestBody NewCommentData data) {
+    public ResponseEntity<?> addCommentForPost(@PathVariable int postId, @RequestBody NewCommentData data, @RequestParam Optional<Long> slowDown) {
         log.info("Create Comment for post {}: {}", postId, data);
+
+        slowDown.ifPresent(this::sleep);
+
+        if (data.name() == null || data.name().trim().isBlank()) {
+            return ResponseEntity.badRequest().body(new ApiError("Please provide name"));
+        }
+
+        if (data.comment() == null || data.comment.length() <3 ) {
+            return ResponseEntity.badRequest().body(new ApiError("Comment must be at least three chars"));
+        }
+
 
         this.commentRepository.addComment(postId, data.name(), data.comment());
 

@@ -1,15 +1,25 @@
-import { Await, generatePath, Link, Outlet } from "react-router-dom";
-import { GetBlogPostResponse, useBlogPostPageRouteLoaderData } from "./blog-queries.ts";
-import { Suspense } from "react";
+import { generatePath, Link, Outlet } from "react-router-dom";
+import { useBlogPostQuery } from "./blog-queries.ts";
+import { usePostIdParam } from "./use-post-id-param.tsx";
+import NewsletterForm from "./NewsletterForm.tsx";
+import { useEffect, useState } from "react";
+import ReactTimeAgo from "react-time-ago";
+
+import en from "javascript-time-ago/locale/en.json";
+import TimeAgo from "javascript-time-ago";
+
+TimeAgo.addDefaultLocale(en);
 
 export default function App() {
-  const { blogPostResponse } = useBlogPostPageRouteLoaderData();
+  const [runningSinceDate, setRunningSinceDate] = useState<Date | null>(null);
+
+  useEffect(() => {
+    setRunningSinceDate(new Date());
+  }, []);
 
   return (
     <>
-      <Suspense fallback={<Header />}>
-        <Await resolve={blogPostResponse}>{(r) => <Header blogPostResponse={r} />}</Await>
-      </Suspense>
+      <Header runningSinceDate={runningSinceDate} />
 
       <div className="Content">
         <main>
@@ -17,29 +27,19 @@ export default function App() {
         </main>
 
         <aside>
-          <form action="#" method="post">
-            <h2>✉️ Subscribe to newsletter</h2>
-            <p>
-              Don't want to miss new premium content? Register here to our newsletter, it's completly free and without
-              ads
-            </p>
-            <div className="FormRow">
-              <input type="text" placeholder="E-Mail" name="email" aria-label="E-Mail" />
-
-              <button type="submit">Register</button>
-            </div>
-            {/*<p th:if="${newsletterFormDataMsg != null}" th:text="${newsletterFormDataMsg}">Success!</p>*/}
-          </form>
+          <NewsletterForm />
         </aside>
       </div>
     </>
   );
 }
 
-type HeaderProps = {
-  blogPostResponse?: GetBlogPostResponse;
-};
-function Header({ blogPostResponse }: HeaderProps) {
+function Header({ runningSinceDate }: { runningSinceDate: Date | null }) {
+  const postId = usePostIdParam();
+  const query = useBlogPostQuery(postId);
+
+  const blogPostResponse = query.data;
+
   const getPostPath = (postId: number) => generatePath("/post/:postId", { postId: String(postId) });
 
   return (
@@ -64,6 +64,11 @@ function Header({ blogPostResponse }: HeaderProps) {
         <h1>
           <Link to="/">My personal blog</Link>
         </h1>
+        {runningSinceDate && (
+          <>
+            Reading since: <ReactTimeAgo date={runningSinceDate} locale="en-US" timeStyle={"twitter"} />
+          </>
+        )}
       </div>
       <div style={{ textAlign: "end" }}>
         {!!blogPostResponse?.nextPostId && (

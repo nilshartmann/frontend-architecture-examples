@@ -1,8 +1,19 @@
-import { defer, Params, useParams, useRouteLoaderData } from "react-router-dom";
 import { z } from "zod";
-import { Query, QueryClient, useMutation, useQuery, UseQueryOptions } from "@tanstack/react-query";
-import invariant from "tiny-invariant";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+const ApiError = z.object({
+  msg: z.string(),
+});
+
+type ApiError = z.infer<typeof ApiError>;
+
+export function isApiError(e: unknown): e is ApiError {
+  return ApiError.safeParse(e).success;
+}
+
+// ---------------------------------------------------------------------------------------------------
+// -- GetBlogPost
+// ---------------------------------------------------------------------------------------------------
 const GetBlogPostResponse = z.object({
   nextPostId: z.number().nullish(),
   prevPostId: z.number().nullish(),
@@ -14,9 +25,23 @@ const GetBlogPostResponse = z.object({
   }),
 });
 
-export type GetBlogPostResponse = z.infer<typeof GetBlogPostResponse>;
+export function useBlogPostQuery(postId: string) {
+  return useQuery({
+    queryKey: ["post", postId],
+    async queryFn() {
+      // slowdown: add "?slowDown=2400" to url
+      const r = await fetch(`http://localhost:8080/api/post/${postId}?slowDown=1600`);
+      const json = await r.json();
+      return GetBlogPostResponse.parse(json);
+    },
+  });
+}
 
-const GetCommentResponse = z
+// ---------------------------------------------------------------------------------------------------
+// -- GetComments
+// ---------------------------------------------------------------------------------------------------
+
+const GetCommentsResponse = z
   .object({
     id: z.number(),
     postId: z.number(),
@@ -25,73 +50,73 @@ const GetCommentResponse = z
   })
   .array();
 
-export type GetCommentResponse = z.infer<typeof GetCommentResponse>;
-
-type QueryConfig<TData> = {
-  queryKey: NonNullable<UseQueryOptions["queryKey"]>;
-  queryFn: UseQueryOptions<TData>["queryFn"];
-};
-
-function blogPostQuery(postId: string): QueryConfig<GetBlogPostResponse> {
-  return {
-    queryKey: ["post", postId],
-    queryFn() {
-      // slowdown: add "?slowDown=2400" to url
-      return fetch(`http://localhost:8080/api/post/${postId}`).then((r) => r.json());
-    },
-  };
-}
-
-function commentsQuery(postId: string): QueryConfig<GetCommentResponse> {
-  return {
+export function useCommentsQuery(postId: string) {
+  return useQuery({
     queryKey: ["comments", postId],
-    queryFn() {
+    async queryFn() {
       // slowdown: add "?slowDown=2400" to url
-      return fetch(`http://localhost:8081/api/comments/${postId}`).then((r) => r.json());
+      const r = await fetch(`http://localhost:8081/api/comments/${postId}?slowDown=2400`);
+      const json = await r.json();
+      return GetCommentsResponse.parse(json);
     },
-  } as const;
+  });
 }
 
-export function blogPostLoader(queryClient: QueryClient) {
-  return async function ({ params }: { params: Params }) {
-    console.log("Loading Post with id", params.postId);
-    return defer({
-      commentsResponse: queryClient.ensureQueryData(commentsQuery(params.postId!)),
-      blogPostResponse: queryClient.ensureQueryData(blogPostQuery(params.postId!)),
-    });
-  };
-}
+// ---------------------------------------------------------------------------------------------------
+// -- AddComment
+// ---------------------------------------------------------------------------------------------------
 
-export function blogPostAction(queryClient: QueryClient) {
-  return async function ({ params, request }: { params: Params; request: Request }) {
-    const { postId } = params;
-    console.log("ADD COMMENT FOR POST", postId);
-    const formdata = await request.formData();
-    console.log("FORM DATA", formdata);
-    const response = await fetch(`http://localhost:8081/api/comments/${postId}`, {
-      method: "POST",
-      body: JSON.stringify(Object.fromEntries(formdata)),
-      headers: { "content-type": "application/json" },
-    });
-    if (!response.ok) {
-      console.log("RESPONSE: ", response.status);
-      const err = await response.json();
-      console.log("ERR", err);
-      throw err;
-    }
-    queryClient.invalidateQueries({
-      queryKey: ["comments", postId],
-    });
-    return null;
-  };
-}
-
-type BlogPostLoaderResult = {
-  blogPostResponse: Promise<GetBlogPostResponse>;
-  commentsResponse: Promise<GetCommentResponse>;
+type AddCommentRequestBody = {
+  name: string;
+  comment: string;
 };
 
-export function useBlogPostPageRouteLoaderData() {
-  const data = useRouteLoaderData("postIdRoute") as BlogPostLoaderResult;
-  return data;
+export function useAddCommentMutation(postId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    async mutationFn(newComment: AddCommentRequestBody) {
+      const response = await fetch(`http://localhost:8081/api/comments/${postId}?slowDown=2400`, {
+        method: "POST",
+        body: JSON.stringify(newComment),
+        headers: { "content-type": "application/json" },
+      });
+      if (!response.ok) {
+        console.log("RESPONSE: ", response.status);
+        const err = await response.json();
+        console.log("ERR", err);
+        throw err;
+      }
+      queryClient.invalidateQueries({
+        queryKey: ["comments", postId],
+      });
+      return null;
+    },
+  });
+}
+
+// ---------------------------------------------------------------------------------------------------
+// -- Subscribe to Newsletter
+// ---------------------------------------------------------------------------------------------------
+
+type SubscribeToNewsletterBody = {
+  email: string;
+};
+
+export function useSubscribeToNewsletterMutation() {
+  return useMutation({
+    async mutationFn(newsletterSubscription: SubscribeToNewsletterBody) {
+      const response = await fetch(`http://localhost:8080/api/newsletter/subscription?slowDown=2400`, {
+        method: "POST",
+        body: JSON.stringify(newsletterSubscription),
+        headers: { "content-type": "application/json" },
+      });
+      if (!response.ok) {
+        console.log("NEWSLETTER RESPONSE: ", response.status);
+        const err = await response.json();
+        console.log("NEWSLETTER ERR", err);
+        throw err;
+      }
+      return null;
+    },
+  });
 }
