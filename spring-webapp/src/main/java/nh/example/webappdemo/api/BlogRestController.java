@@ -44,8 +44,10 @@ public class BlogRestController {
     public record SubscribeToNewsletterRequest(String email) {}
 
     @PostMapping("/api/newsletter/subscription")
-    public ResponseEntity<?> subscribeToNewsletter(@RequestBody SubscribeToNewsletterRequest request) {
+    public ResponseEntity<?> subscribeToNewsletter(@RequestBody SubscribeToNewsletterRequest request, @RequestParam Optional<Long> slowDown) {
         log.info("Subscribe to newsletter... {}", request);
+
+        slowDown.ifPresent(this::sleep);
 
         if (request.email()==null || request.email().isBlank()) {
             return ApiError.badRequest("Please fill in correct e-mail address");
