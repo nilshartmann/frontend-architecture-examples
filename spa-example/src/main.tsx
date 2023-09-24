@@ -6,6 +6,10 @@ import { createBrowserRouter, redirect, RouterProvider } from "react-router-dom"
 import BlogPostPage from "./BlogPostPage.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
+import en from "javascript-time-ago/locale/en.json";
+import TimeAgo from "javascript-time-ago";
+TimeAgo.addDefaultLocale(en);
+
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter([

@@ -2,24 +2,13 @@ import { generatePath, Link, Outlet } from "react-router-dom";
 import { useBlogPostQuery } from "./blog-queries.ts";
 import { usePostIdParam } from "./use-post-id-param.tsx";
 import NewsletterForm from "./NewsletterForm.tsx";
-import { useEffect, useState } from "react";
-import ReactTimeAgo from "react-time-ago";
 
-import en from "javascript-time-ago/locale/en.json";
-import TimeAgo from "javascript-time-ago";
-
-TimeAgo.addDefaultLocale(en);
+import ReadingSince from "./ReadingSince.tsx";
 
 export default function App() {
-  const [runningSinceDate, setRunningSinceDate] = useState<Date | null>(null);
-
-  useEffect(() => {
-    setRunningSinceDate(new Date());
-  }, []);
-
   return (
     <>
-      <Header runningSinceDate={runningSinceDate} />
+      <Header />
 
       <div className="Content">
         <main>
@@ -34,7 +23,7 @@ export default function App() {
   );
 }
 
-function Header({ runningSinceDate }: { runningSinceDate: Date | null }) {
+function Header() {
   const postId = usePostIdParam();
   const query = useBlogPostQuery(postId);
 
@@ -64,11 +53,7 @@ function Header({ runningSinceDate }: { runningSinceDate: Date | null }) {
         <h1>
           <Link to="/">My personal blog</Link>
         </h1>
-        {runningSinceDate && (
-          <>
-            Reading since: <ReactTimeAgo date={runningSinceDate} locale="en-US" timeStyle={"twitter"} />
-          </>
-        )}
+        <ReadingSince />
       </div>
       <div style={{ textAlign: "end" }}>
         {!!blogPostResponse?.nextPostId && (

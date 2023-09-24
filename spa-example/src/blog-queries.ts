@@ -1,6 +1,17 @@
 import { z } from "zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+// ---------------------------------------------------------------------------------------------------
+// -- Simulate slowness
+// ---------------------------------------------------------------------------------------------------
+const addCommentSlowdown = ``; // `?slowDown=2400`
+const getBlogPostSlowdown = ``; // `?slowDown=1600`
+const getCommentsSlowdown = ``; // `?slowDown=2400`
+const subscribeToNewsletterSlowdown = ``; // `?slowDown=2400`
+
+// ---------------------------------------------------------------------------------------------------
+// -- ApiError Response for failed Api Requests
+// ---------------------------------------------------------------------------------------------------
 const ApiError = z.object({
   msg: z.string(),
 });
@@ -30,7 +41,7 @@ export function useBlogPostQuery(postId: string) {
     queryKey: ["post", postId],
     async queryFn() {
       // slowdown: add "?slowDown=2400" to url
-      const r = await fetch(`http://localhost:8080/api/post/${postId}?slowDown=1600`);
+      const r = await fetch(`http://localhost:8080/api/post/${postId}${getBlogPostSlowdown}`);
       const json = await r.json();
       return GetBlogPostResponse.parse(json);
     },
@@ -55,7 +66,7 @@ export function useCommentsQuery(postId: string) {
     queryKey: ["comments", postId],
     async queryFn() {
       // slowdown: add "?slowDown=2400" to url
-      const r = await fetch(`http://localhost:8081/api/comments/${postId}?slowDown=2400`);
+      const r = await fetch(`http://localhost:8081/api/comments/${postId}${getCommentsSlowdown}`);
       const json = await r.json();
       return GetCommentsResponse.parse(json);
     },
@@ -75,18 +86,17 @@ export function useAddCommentMutation(postId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     async mutationFn(newComment: AddCommentRequestBody) {
-      const response = await fetch(`http://localhost:8081/api/comments/${postId}?slowDown=2400`, {
+      const response = await fetch(`http://localhost:8081/api/comments/${postId}${addCommentSlowdown}`, {
         method: "POST",
         body: JSON.stringify(newComment),
         headers: { "content-type": "application/json" },
       });
       if (!response.ok) {
-        console.log("RESPONSE: ", response.status);
         const err = await response.json();
         console.log("ERR", err);
         throw err;
       }
-      queryClient.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: ["comments", postId],
       });
       return null;
@@ -105,13 +115,15 @@ type SubscribeToNewsletterBody = {
 export function useSubscribeToNewsletterMutation() {
   return useMutation({
     async mutationFn(newsletterSubscription: SubscribeToNewsletterBody) {
-      const response = await fetch(`http://localhost:8080/api/newsletter/subscription?slowDown=2400`, {
-        method: "POST",
-        body: JSON.stringify(newsletterSubscription),
-        headers: { "content-type": "application/json" },
-      });
+      const response = await fetch(
+        `http://localhost:8080/api/newsletter/subscription${subscribeToNewsletterSlowdown}`,
+        {
+          method: "POST",
+          body: JSON.stringify(newsletterSubscription),
+          headers: { "content-type": "application/json" },
+        },
+      );
       if (!response.ok) {
-        console.log("NEWSLETTER RESPONSE: ", response.status);
         const err = await response.json();
         console.log("NEWSLETTER ERR", err);
         throw err;
