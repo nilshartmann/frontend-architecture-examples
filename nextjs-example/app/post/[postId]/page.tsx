@@ -7,6 +7,8 @@ type BlogPostPageProps = { params: Params };
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const postId = params.postId;
 
+  console.log(` *** Rendering Blog Post Page for Post-Id ${postId} ***`);
+
   const commentsPromise = loadComments(postId);
   const { post } = await loadBlogPost(postId);
 
@@ -23,11 +25,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 }
 
 export async function generateStaticParams() {
-  console.log("Determinig post ids...");
   const response = await fetch("http://localhost:8080/api/post-ids");
   const body = (await response.json()) as { postIds: number[] };
-
-  console.log("Current post ids", body);
 
   return body.postIds.map((postId) => ({
     postId: String(postId),
