@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -39,6 +40,16 @@ public class BlogRestController {
         var nextPostId = postId < blogPostRepository.getPostCount() ?  (postId + 1) : null;
 
         return ResponseEntity.ok(new GetBlogPostResponse(post, prevPostId, nextPostId));
+    }
+
+    record GetPostIdsResponse(List<Integer> postIds) {
+    }
+
+    @GetMapping("/api/post-ids")
+    public ResponseEntity<?> getPostIds() {
+        log.info("Reading post ids");
+        var postIds = blogPostRepository.getPostIds();
+        return ResponseEntity.ok(new GetPostIdsResponse(postIds));
     }
 
     public record SubscribeToNewsletterRequest(String email) {}

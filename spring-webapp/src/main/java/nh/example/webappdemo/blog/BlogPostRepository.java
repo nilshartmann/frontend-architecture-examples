@@ -41,4 +41,8 @@ public class BlogPostRepository {
     public int getPostCount() {
         return posts.size();
     }
+
+    public List<Integer> getPostIds() {
+        return posts.stream().map(BlogPost::id).toList();
+    }
 }
