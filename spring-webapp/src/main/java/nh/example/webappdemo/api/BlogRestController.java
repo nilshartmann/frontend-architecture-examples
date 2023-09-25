@@ -42,6 +42,18 @@ public class BlogRestController {
         return ResponseEntity.ok(new GetBlogPostResponse(post, prevPostId, nextPostId));
     }
 
+    public record TocItem(int id, String title) {}
+    public record TocResponse(List<TocItem> items){}
+
+    @GetMapping("/api/toc")
+    public ResponseEntity<?> getToc(@RequestParam("order_by") Optional<String> orderBy) {
+
+        var posts = blogPostRepository.getPosts(orderBy.orElse("asc"));
+        var items = posts.stream().map(p -> new TocItem(p.id(), p.title())).toList();
+
+        return ResponseEntity.ok(new TocResponse(items));
+    }
+
     record GetPostIdsResponse(List<Integer> postIds) {
     }
 

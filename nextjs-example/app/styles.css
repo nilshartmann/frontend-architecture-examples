@@ -167,14 +167,44 @@ form button {
   cursor: pointer;
 }
 
+.ButtonBar button {
+  padding: 8px 12px;
+  font-weight: 600;
+  background-color: rgb(39, 39, 42);
+  color: rgb(229, 231, 235);
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right:1rem;
+}
+
+.ButtonBar :disabled {
+  background-color: rgb(229, 231, 235);
+  color: rgb(166, 166, 166);
+  cursor: default;
+}
+
 form button:hover {
   background-color: #fafafa;
   color: rgb(82, 82, 91);
   border: 1px solid rgb(82, 82, 91);
+
 }
 
 
 aside {
   grid-column: span 4/span 4;
   padding-right: 2rem;
+}
+.Toc {
+  margin-top: 2rem;
+}
+
+.Toc ul {
+  padding:1rem;
+}
+
+.Toc li {
+  margin-bottom: 1rem;
+
 }

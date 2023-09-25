@@ -32,6 +32,29 @@ export async function loadBlogPost(postId: string) {
 export type GetBlogPostResponsePromise = ReturnType<typeof loadBlogPost>;
 
 // ---------------------------------------------------------------------------------------------------
+// -- GetToc
+// ---------------------------------------------------------------------------------------------------
+const GetTocResponse = z.object({
+  items: z
+    .object({
+      id: z.number(),
+      title: z.string(),
+    })
+    .array(),
+});
+
+export async function loadToc(orderBy: "asc" | "desc") {
+  // slowdown: add "?slowDown=2400" to url
+  const r = await fetch(
+    `http://localhost:8080/api/toc?order_by=${encodeURIComponent(orderBy)}`,
+  );
+  const json = await r.json();
+  return GetTocResponse.parse(json);
+}
+
+export type GetTocResponsePromise = ReturnType<typeof loadToc>;
+
+// ---------------------------------------------------------------------------------------------------
 // -- GetComments
 // ---------------------------------------------------------------------------------------------------
 

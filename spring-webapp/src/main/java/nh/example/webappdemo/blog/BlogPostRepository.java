@@ -45,4 +45,18 @@ public class BlogPostRepository {
     public List<Integer> getPostIds() {
         return posts.stream().map(BlogPost::id).toList();
     }
+
+    public List<BlogPost> getPosts(String orderBy) {
+
+        return posts.stream().sorted( (b1, b2) -> {
+            if ("asc".equals(orderBy)) {
+                return b1.title().compareTo(b2.title());
+            } else {
+                return b2.title().compareTo(b1.title());
+            }
+
+        }).toList();
+
+
+    }
 }
