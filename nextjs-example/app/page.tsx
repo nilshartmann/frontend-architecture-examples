@@ -3,6 +3,7 @@ import NewsletterForm from "@/app/post/[postId]/NewsletterForm";
 import { loadToc } from "@/app/api-queries";
 import OrderByButton from "@/app/OrderByButton";
 import Link from "next/link";
+import TextFeld from "@/app/Textfeld";
 
 type HomePageProps = {
   searchParams?: { [key: string]: string };
@@ -52,6 +53,8 @@ async function Toc({ orderBy }: { orderBy: "asc" | "desc" }) {
           </li>
         ))}
       </ul>
+      {/* For Demo only: */}
+      {/*<TextFeld />*/}
     </div>
   );
 }
